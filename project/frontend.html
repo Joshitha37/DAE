@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jungle Image Drop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the jungle theme */
+        body {
+            /* Updated background-image to use the provided URL */
+            background-image: url(img/image_fx.jpg);
+            background-size: cover; /* Ensure the image covers the entire background */
+            background-position: center; /* Center the image */
+            color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        #title-header {
+            background-color: rgba(34, 139, 34, 0.7);
+            padding: 16px;
+            text-align: center;
+            border-bottom: 2px solid #86ef7d;
+            width: 100%;
+        }
+
+        #drop-area {
+            border: 4px dashed #86ef7d;
+            border-radius: 16px;
+            width: 80%;
+            max-width: 600px;
+            padding: 32px;
+            text-align: center;
+            background-color: rgba(34, 139, 34, 0.3);
+            margin-bottom: 24px;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        #drop-area:hover,
+        #drop-area.dragover {
+            border-color: #34d399;
+            background-color: rgba(34, 139, 34, 0.5);
+        }
+
+        #drop-area p {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #gallery img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            object-fit: cover;
+            position: relative; /* Make sure the image is a positioned element */
+        }
+
+        #gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .button {
+            background-color: #4ade80;
+            color: #0c4a16;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            text-align: center; /* Center the text inside the button */
+        }
+
+        .button:hover {
+            background-color: #22c55e;
+            color: #f5f5f5;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:active {
+            background-color: #16a34a;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transform: translateY(1px);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .image-overlay p {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #drop-area:hover .image-overlay,
+        #drop-area.dragover .image-overlay {
+            opacity: 1;
+        }
+
+        #image-upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 24px;
+        }
+
+        .remove-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .remove-button:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        #gallery img:hover .remove-button {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body class="bg-green-900 text-gray-50 flex flex-col items-center">
+    <div id="title-header">
+        <h1 class="text-3xl font-bold text-white">Title</h1>
+    </div>
+    <form id="image-upload-form" class="w-full max-w-md mt-8">
+        <div id="drop-area" class="border-dashed border-4 border-green-400 rounded-lg p-8 mb-6 relative">
+            <div class="image-overlay">
+                <p>Drop Images Here</p>
+            </div>
+            <p class="text-lg text-white mb-4">Drag and drop image files here, or click to select files.</p>
+        </div>
+        <label for="file-input" class="button">Choose Files</label>
+        <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+
+        <div id="gallery" class="flex flex-wrap justify-center gap-4">
+        </div>
+        <button type="submit" class="button mt-4">Submit</button>
+    </form>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const gallery = document.getElementById('gallery');
+        const imageUploadForm = document.getElementById('image-upload-form');
+
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+
+                        // Add a remove button to each image
+                        const removeButton = document.createElement('button');
+                        removeButton.classList.add('remove-button');
+                        removeButton.textContent = 'x'; // Use a simple 'x' for the button
+                        removeButton.addEventListener('click', (event) => {
+                            event.target.parentNode.remove(); // Remove the image and button
+                        });
+
+                        const imgContainer = document.createElement('div'); // Create a container div
+                        imgContainer.style.position = 'relative'; // Set position to relative for absolute positioning of button
+                        imgContainer.appendChild(img); // Append image
+                        imgContainer.appendChild(removeButton); // Append button
+                        gallery.appendChild(imgContainer); // Append the container to gallery
+
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('File "' + file.name + '" is not an image.');
+                }
+            }
+        }
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        //Fix: Ensure file input change event is handled.
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        // Prevent form submission to avoid page refresh.  Important for demo.
+        imageUploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Form submitted with images:', fileInput.files);
+            gallery.innerHTML = '';
+            fileInput.value = '';
+            alert('Images submitted successfully!');
+        });
+    </script>
+</body>
+</html>
